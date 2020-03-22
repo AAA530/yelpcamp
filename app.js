@@ -43,12 +43,14 @@ app.post('/campgrounds',(req,res)=>{
     //to add data to array
     var name = req.body.name;
     var image = req.body.image;
-    var n = {name : name ,image:image}
+    var desc = req.body.description;
+    var n = {name : name ,image:image ,description : desc}
     
     camp.create(n , (err,camp)=>{
         if(err){
             console.log(err);
         }else{
+            console.log(camp);
             res.redirect('/campgrounds');
         }
     })
