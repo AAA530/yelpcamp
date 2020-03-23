@@ -61,7 +61,13 @@ app.get('/campgrounds/new',(req,res)=>{
 })
 
 app.get('/campgrounds/:id',(req,res)=>{
-    res.send("this id");
+    camp.findById(req.params.id,(err,fcamp)=>{
+        if(err){
+            console.log(err);
+        }else{
+            res.render('show',{camp : fcamp});
+        }
+    })
 })
 
 app.listen(3000,function(){
