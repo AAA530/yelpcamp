@@ -16,13 +16,7 @@ app.use(body_parser.urlencoded({extended : true}))
 
 app.set("view engine","ejs");
 
-var campschema = new mongoose.Schema({
-    name : String,
-    image : String,
-    description : String
-});
-
-var camp = mongoose.model("camp", campschema);
+var camp = require('./models/camps')
 
 app.get('/',(req,res)=>{
     res.render("landing")
