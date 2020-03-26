@@ -5,6 +5,18 @@
 
 <p>this is description : <%= camp.description %> </p>
 
+<p>
+    <% camp.comments.forEach(element => { %>
+        <p>
+            <strong>
+                <%= element.author %> 
+            </strong>
+            <p>
+                <%= element.text %> 
+            </p>
+        </p>
+    <% }); %> 
+</p>
 
 
 <%- include('partials/footer'); %>

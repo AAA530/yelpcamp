@@ -16,7 +16,12 @@ app.use(body_parser.urlencoded({extended : true}))
 
 app.set("view engine","ejs");
 
+//modules are required here
+var comment = require('./models/comment')
 var camp = require('./models/camps')
+var seedDB = require('./seeds')
+
+seedDB();
 
 app.get('/',(req,res)=>{
     res.render("landing")
@@ -55,10 +60,11 @@ app.get('/campgrounds/new',(req,res)=>{
 })
 
 app.get('/campgrounds/:id',(req,res)=>{
-    camp.findById(req.params.id,(err,fcamp)=>{
+    camp.findById(req.params.id).populate("comments").exec((err,fcamp)=>{
         if(err){
             console.log(err);
         }else{
+            console.log(fcamp)
             res.render('show',{camp : fcamp});
         }
     })
