@@ -21,7 +21,7 @@ var comment = require('./models/comment')
 var camp = require('./models/camps')
 var seedDB = require('./seeds')
 
-seedDB();
+// seedDB();
 
 app.get('/',(req,res)=>{
     res.render("landing")
@@ -70,6 +70,44 @@ app.get('/campgrounds/:id',(req,res)=>{
     })
 })
 
+
+//============================
+// Comments Routes
+//============================
+
+app.get("/campgrounds/:id/comments/new",(req,res)=>{
+    camp.findById(req.params.id).populate("comments").exec((err,fcamp)=>{
+        if(err){
+            console.log(err);
+        }else{
+            console.log(fcamp)
+            res.render('new_comment',{camp : fcamp});
+        }
+    })
+})
+
+app.post("/campgrounds/:id/comments",(req,res)=>{
+    var n_comment = req.body.comment
+    var id = req.params.id
+    camp.findById(req.params.id,(err,camp)=>{
+        if(err){
+            console.log(err)
+            res.redirect('/campgrounds')
+        }else{
+            comment.create(n_comment,(err,b_comment)=>{
+                if(err){
+                    console.log(err)
+                }else{
+                    camp.comments.push(b_comment)
+                    camp.save()
+                    res.redirect("/campgrounds/"+ id);
+                }
+            })
+        }
+    })
+})
+
+//start server at particular port
 app.listen(3000,function(){
     console.log("success!");
 })
