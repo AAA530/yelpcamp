@@ -11,7 +11,7 @@ mongoose.set('useUnifiedTopology', true);
 mongoose.connect("mongodb://localhost/yelp_camp");
 
 
-app.use(express.static('public')); // This line.
+app.use(express.static('public')); // This line is for connecting custom css and javascript.
 app.use(body_parser.urlencoded({extended : true}))
 
 app.set("view engine","ejs");
