@@ -107,6 +107,11 @@ app.post("/campgrounds/:id/comments",(req,res)=>{
     })
 })
 
+
+app.get("/login",(req,res)=>{
+    res.send("hii")
+})
+
 //start server at particular port
 app.listen(3000,function(){
     console.log("success!");
