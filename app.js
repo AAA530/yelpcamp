@@ -118,11 +118,24 @@ app.post('/login', passport.authenticate('local',{
 }) ,(req,res)=>{
 })
 
+app.get('/logout',(req,res)=>{
+    req.logOut()
+    res.redirect("cmapgrounds")
+})
+
+function isLoggedIn(req ,res ,next){
+    if(req.isAuthenticated()){
+        return next()
+    }else{
+        res.redirect("/login")
+    }
+}
+
 //============================
 // Comments Routes
 //============================
 
-app.get("/campgrounds/:id/comments/new",(req,res)=>{
+app.get("/campgrounds/:id/comments/new",isLoggedIn,(req,res)=>{
     camp.findById(req.params.id).populate("comments").exec((err,fcamp)=>{
         if(err){
             console.log(err);
@@ -133,7 +146,7 @@ app.get("/campgrounds/:id/comments/new",(req,res)=>{
     })
 })
 
-app.post("/campgrounds/:id/comments",(req,res)=>{
+app.post("/campgrounds/:id/comments",isLoggedIn,(req,res)=>{
     var n_comment = req.body.comment
     var id = req.params.id
     camp.findById(req.params.id,(err,camp)=>{
@@ -154,10 +167,6 @@ app.post("/campgrounds/:id/comments",(req,res)=>{
     })
 })
 
-
-app.get("/login",(req,res)=>{
-    res.send("hii")
-})
 
 //start server at particular port
 app.listen(3000,function(){
