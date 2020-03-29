@@ -26,6 +26,7 @@ var seedDB = require('./seeds')
 
 // seedDB();
 
+
 //passport config
 app.use(require('express-session')({
     secret : "this dhairya patel",
@@ -37,6 +38,12 @@ app.use(passport.session())
 passport.use(new LocalStrategy(user.authenticate()))
 passport.serializeUser(user.serializeUser())
 passport.deserializeUser(user.deserializeUser())
+
+app.use((req,res,next)=>{
+    res.locals.currentUser = req.user;
+    next();
+})
+
 
 app.get('/',(req,res)=>{
     res.render("landing")
@@ -54,6 +61,7 @@ app.get('/campgrounds',(req,res)=>{
 
 
 app.post('/campgrounds',(req,res)=>{
+
     //to add data to array
     var name = req.body.name;
     var image = req.body.image;
