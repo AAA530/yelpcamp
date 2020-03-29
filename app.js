@@ -26,6 +26,18 @@ var seedDB = require('./seeds')
 
 // seedDB();
 
+//passport config
+app.use(require('express-session')({
+    secret : "this dhairya patel",
+    resave : false,
+    saveUninitialized : false
+}))
+app.use(passport.initialize())
+app.use(passport.session())
+passport.use(new LocalStrategy(user.authenticate()))
+passport.serializeUser(user.serializeUser())
+passport.deserializeUser(user.deserializeUser())
+
 app.get('/',(req,res)=>{
     res.render("landing")
 })
@@ -73,6 +85,38 @@ app.get('/campgrounds/:id',(req,res)=>{
     })
 })
 
+
+//============================
+// Auth Routes
+//============================
+
+app.get('/register',(req,res)=>{
+    res.render('register')
+})
+
+app.post('/register',(req,res)=>{
+    var nuser = new user({username : req.body.username})
+    user.register(nuser, req.body.password ,(err,user)=>{
+        if(err){
+            res.redirect('/register')
+        }else{
+            passport.authenticate("local")(req,res,()=>{
+                res.redirect('/campgrounds')
+            })
+        }
+    })
+})
+
+//login routes
+app.get('/login',(req,res)=>{
+    res.render("login")
+})
+
+app.post('/login', passport.authenticate('local',{
+    successRedirect : "/campgrounds",
+    failureRedirect : "/login"
+}) ,(req,res)=>{
+})
 
 //============================
 // Comments Routes
