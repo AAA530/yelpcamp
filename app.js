@@ -5,6 +5,10 @@ var passport = require('passport')
 var LocalStrategy = require('passport-local')
 var app = express();
 
+var commentRoutes = require('./routes/comment')
+var campgroundRoutes = require('./routes/campground')
+var indexRoutes = require('./routes/index')
+
 mongoose.set('useNewUrlParser', true);
 mongoose.set('useFindAndModify', false);
 mongoose.set('useCreateIndex', true);
@@ -33,6 +37,7 @@ app.use(require('express-session')({
     resave : false,
     saveUninitialized : false
 }))
+
 app.use(passport.initialize())
 app.use(passport.session())
 passport.use(new LocalStrategy(user.authenticate()))
@@ -45,136 +50,9 @@ app.use((req,res,next)=>{
 })
 
 
-app.get('/',(req,res)=>{
-    res.render("landing")
-})
-
-app.get('/campgrounds',(req,res)=>{
-    camp.find({},(err,camp)=>{
-        if(err){
-            console.log(err);
-        }else{
-            res.render("campground",{campground : camp});
-        }
-    })
-});
-
-
-app.post('/campgrounds',(req,res)=>{
-
-    //to add data to array
-    var name = req.body.name;
-    var image = req.body.image;
-    var desc = req.body.description;
-    var n = {name : name ,image:image ,description : desc}
-    
-    camp.create(n , (err,camp)=>{
-        if(err){
-            console.log(err);
-        }else{
-            console.log(camp);
-            res.redirect('/campgrounds');
-        }
-    })
-});
-
-app.get('/campgrounds/new',(req,res)=>{
-    res.render('new_camp');
-})
-
-app.get('/campgrounds/:id',(req,res)=>{
-    camp.findById(req.params.id).populate("comments").exec((err,fcamp)=>{
-        if(err){
-            console.log(err);
-        }else{
-            console.log(fcamp)
-            res.render('show',{camp : fcamp});
-        }
-    })
-})
-
-
-//============================
-// Auth Routes
-//============================
-
-app.get('/register',(req,res)=>{
-    res.render('register')
-})
-
-app.post('/register',(req,res)=>{
-    var nuser = new user({username : req.body.username})
-    user.register(nuser, req.body.password ,(err,user)=>{
-        if(err){
-            res.redirect('/register')
-        }else{
-            passport.authenticate("local")(req,res,()=>{
-                res.redirect('/campgrounds')
-            })
-        }
-    })
-})
-
-//login routes
-app.get('/login',(req,res)=>{
-    res.render("login")
-})
-
-app.post('/login', passport.authenticate('local',{
-    successRedirect : "/campgrounds",
-    failureRedirect : "/login"
-}) ,(req,res)=>{
-})
-
-app.get('/logout',(req,res)=>{
-    req.logOut()
-    res.redirect("cmapgrounds")
-})
-
-function isLoggedIn(req ,res ,next){
-    if(req.isAuthenticated()){
-        return next()
-    }else{
-        res.redirect("/login")
-    }
-}
-
-//============================
-// Comments Routes
-//============================
-
-app.get("/campgrounds/:id/comments/new",isLoggedIn,(req,res)=>{
-    camp.findById(req.params.id).populate("comments").exec((err,fcamp)=>{
-        if(err){
-            console.log(err);
-        }else{
-            console.log(fcamp)
-            res.render('new_comment',{camp : fcamp});
-        }
-    })
-})
-
-app.post("/campgrounds/:id/comments",isLoggedIn,(req,res)=>{
-    var n_comment = req.body.comment
-    var id = req.params.id
-    camp.findById(req.params.id,(err,camp)=>{
-        if(err){
-            console.log(err)
-            res.redirect('/campgrounds')
-        }else{
-            comment.create(n_comment,(err,b_comment)=>{
-                if(err){
-                    console.log(err)
-                }else{
-                    camp.comments.push(b_comment)
-                    camp.save()
-                    res.redirect("/campgrounds/"+ id);
-                }
-            })
-        }
-    })
-})
-
+app.use(commentRoutes)
+app.use(campgroundRoutes)
+app.use(indexRoutes)
 
 //start server at particular port
 app.listen(3000,function(){
