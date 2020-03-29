@@ -1,6 +1,8 @@
 var express = require('express');
 var body_parser = require('body-parser');
 var mongoose = require('mongoose'); 
+var passport = require('passport')
+var LocalStrategy = require('passport-local')
 var app = express();
 
 mongoose.set('useNewUrlParser', true);
@@ -19,6 +21,7 @@ app.set("view engine","ejs");
 //modules are required here
 var comment = require('./models/comment')
 var camp = require('./models/camps')
+var user = require('./models/user')
 var seedDB = require('./seeds')
 
 // seedDB();
