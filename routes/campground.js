@@ -19,13 +19,17 @@ router.get('/campgrounds',(req,res)=>{
 });
 
 
-router.post('/campgrounds',(req,res)=>{
+router.post('/campgrounds',isLoggedIn,(req,res)=>{
 
     //to add data to array
     var name = req.body.name;
     var image = req.body.image;
     var desc = req.body.description;
-    var n = {name : name ,image:image ,description : desc}
+    var author = {
+        id : req.user._id,
+        username : req.user.username
+    }
+    var n = {name : name ,image:image , author : author ,description : desc}
     
     camp.create(n , (err,camp)=>{
         if(err){
@@ -37,7 +41,7 @@ router.post('/campgrounds',(req,res)=>{
     })
 });
 
-router.get('/campgrounds/new',(req,res)=>{
+router.get('/campgrounds/new',isLoggedIn,(req,res)=>{
     res.render('new_camp');
 })
 
@@ -52,5 +56,12 @@ router.get('/campgrounds/:id',(req,res)=>{
     })
 })
 
+function isLoggedIn(req ,res ,next){
+    if(req.isAuthenticated()){
+        return next()
+    }else{
+        res.redirect("/login")
+    }
+}
 
 module.exports = router
