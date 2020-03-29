@@ -28,6 +28,9 @@
               </li>
             <% }else{ %>
               <li class="nav-item">
+                <span class="nav-link">Logged in as <%= currentUser.username %></span> 
+              </li>
+              <li class="nav-item">
                 <a class="nav-link" href="/logout">LogOut</a>
               </li>
             <% } %>
