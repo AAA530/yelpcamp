@@ -31,28 +31,28 @@ function seedDB(){
         }else{
             console.log("removed sucessfully")
             //add new data into database
-            data.forEach((seed)=>{
-                camp.create(seed,(err,camp)=>{
-                    if(err){
-                        console.log(err)
-                    }else{
-                        console.log("camp added");
+            // data.forEach((seed)=>{
+            //     camp.create(seed,(err,camp)=>{
+            //         if(err){
+            //             console.log(err)
+            //         }else{
+            //             console.log("camp added");
 
-                        //add a comment
-                        Comment.create({
-                            text : "This is a very good campground worth a stay",
-                            author : "Heisenberg"   
-                        },(err,com)=>{
-                            if(err){
-                                console.log(err)
-                            }else{
-                                camp.comments.push(com)
-                                camp.save()
-                            }
-                        })
-                    }
-                })
-            })
+            //             //add a comment
+            //             Comment.create({
+            //                 text : "This is a very good campground worth a stay",
+            //                 author : "Heisenberg"   
+            //             },(err,com)=>{
+            //                 if(err){
+            //                     console.log(err)
+            //                 }else{
+            //                     camp.comments.push(com)
+            //                     camp.save()
+            //                 }
+            //             })
+            //         }
+            //     })
+            // })
         }
     })
 }

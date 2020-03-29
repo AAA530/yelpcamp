@@ -37,7 +37,7 @@ router.post('/login', passport.authenticate('local',{
 
 router.get('/logout',(req,res)=>{
     req.logOut()
-    res.redirect("cmapgrounds")
+    res.redirect("/campgrounds")
 })
 
 function isLoggedIn(req ,res ,next){
