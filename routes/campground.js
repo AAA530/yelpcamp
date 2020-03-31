@@ -56,6 +56,34 @@ router.get('/campgrounds/:id',(req,res)=>{
     })
 })
 
+//update campgrounds
+router.get('/campgrounds/:id/edit',(req,res)=>{
+    camp.findById(req.params.id,(err,fcamp)=>{
+        if(err){
+            console.log(err);
+        }else{
+            console.log(fcamp)
+            res.render('camp_edit',{camp : fcamp});
+        }
+    })
+})
+
+router.put('/campgrounds/:id/edit',(req,res)=>{
+    camp.findByIdAndUpdate(req.params.id , req.body.cam , (err,ncamp)=>{
+        if(err){
+            res.redirect("/campgrounds")
+        }else{
+            res.redirect("/campgrounds/"+req.params.id)
+        }
+    })
+})
+
+router.delete('/campgrounds/:id',(req,res)=>{
+    camp.findByIdAndRemove(req.params.id,(err)=>{
+        res.redirect("/campgrounds")
+    })
+})
+
 function isLoggedIn(req ,res ,next){
     if(req.isAuthenticated()){
         return next()

@@ -3,6 +3,7 @@ var body_parser = require('body-parser');
 var mongoose = require('mongoose'); 
 var passport = require('passport')
 var LocalStrategy = require('passport-local')
+var methodOverride = require('method-override')
 var app = express();
 
 var commentRoutes = require('./routes/comment')
@@ -21,6 +22,7 @@ app.use(express.static('public')); // This line is for connecting custom css and
 app.use(body_parser.urlencoded({extended : true}))
 
 app.set("view engine","ejs");
+app.use(methodOverride("_method"))
 
 //modules are required here
 var comment = require('./models/comment')
