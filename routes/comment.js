@@ -46,6 +46,41 @@ router.post("/campgrounds/:id/comments",isLoggedIn,(req,res)=>{
     })
 })
 
+//============================
+// Comments Edit Routes
+//============================
+router.get("/campgrounds/:id/comments/:com_id/edit",isLoggedIn,(req,res)=>{
+    var camp = {
+        id : req.params.id
+    }
+
+    comment.findById(req.params.com_id,(err,fcomment)=>{
+        if(err){
+            console.log(err);
+        }else{
+            console.log(fcomment)
+            res.render('edit_comment',{comment : fcomment ,camp : camp});
+        }
+    })
+})
+
+router.put("/campgrounds/:id/comments/:com_id",isLoggedIn,(req,res)=>{
+    comment.findByIdAndUpdate(req.params.com_id,req.body.comment,(err,ncom)=>{
+        if(err){
+            console.log(err)
+        }else{
+            res.redirect("/campgrounds/"+req.params.id)
+        }
+    })
+})
+
+router.delete('/campgrounds/:id/comments/:com_id',(req,res)=>{
+    comment.findByIdAndRemove(req.params.com_id,(err)=>{
+        res.redirect('back')
+    })
+})
+
+
 function isLoggedIn(req ,res ,next){
     if(req.isAuthenticated()){
         return next()

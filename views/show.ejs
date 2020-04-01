@@ -43,8 +43,13 @@
                             </span>
                             <p>
                                 <%= element.text %> 
+                                <br>
+                                <p style="background-color: blue;"></p>
+                                <a href="/campgrounds/<%= camp.id %>/comments/<%= element.id %>/edit" class="btn btn-primary">EDIT</a>
+                                <form action="/campgrounds/<%= camp.id %>/comments/<%= element.id %>?_method=DELETE" style="display: inline;float: right;" method="POST">
+                                    <input class="btn btn-danger" style="display: inline;" type="submit" value="DELETE">
+                                </form>
                             </p>
-
                         </div>
                     </div>
                 <% }); %> 
