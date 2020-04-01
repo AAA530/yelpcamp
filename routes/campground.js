@@ -57,18 +57,13 @@ router.get('/campgrounds/:id',(req,res)=>{
 })
 
 //update campgrounds
-router.get('/campgrounds/:id/edit',(req,res)=>{
+router.get('/campgrounds/:id/edit',authCampOwner , (req,res)=>{
     camp.findById(req.params.id,(err,fcamp)=>{
-        if(err){
-            console.log(err);
-        }else{
-            console.log(fcamp)
-            res.render('camp_edit',{camp : fcamp});
-        }
+        res.render('camp_edit',{camp : fcamp})
     })
 })
 
-router.put('/campgrounds/:id/edit',(req,res)=>{
+router.put('/campgrounds/:id/edit',authCampOwner,(req,res)=>{
     camp.findByIdAndUpdate(req.params.id , req.body.cam , (err,ncamp)=>{
         if(err){
             res.redirect("/campgrounds")
@@ -78,7 +73,7 @@ router.put('/campgrounds/:id/edit',(req,res)=>{
     })
 })
 
-router.delete('/campgrounds/:id',(req,res)=>{
+router.delete('/campgrounds/:id',authCampOwner,(req,res)=>{
     camp.findByIdAndRemove(req.params.id,(err)=>{
         res.redirect("/campgrounds")
     })
@@ -89,6 +84,26 @@ function isLoggedIn(req ,res ,next){
         return next()
     }else{
         res.redirect("/login")
+    }
+}
+
+function authCampOwner(req , res , next){
+    //adding authorization
+    if(req.isAuthenticated()){
+        camp.findById(req.params.id,(err,fcamp)=>{
+            if(err){
+                res.redirect("back")
+            }else{
+                if(fcamp.author.id.equals(req.user._id)){
+                    next();
+                }else{
+                    res.redirect("back")
+                }
+            }
+        })
+
+    }else{
+        res.redirect("back")
     }
 }
 

@@ -18,10 +18,14 @@
                     <h4 class="float-right">2500/-</h4>
                     <h3><%= camp.name %></h3>
                     <p><%= camp.description %></p>
-                    <a class="btn btn-secondary" href="/campgrounds/<%= camp._id %>/edit">Edit Campground</a>
-                    <form action="/campgrounds/<%= camp._id %>?_method=DELETE"  style="display: inline; margin: 20px;"  method="POST">
-                        <button class="btn btn-danger float-right" type="submit" >Delete</button>
-                    </form>
+
+                    <% if (currentUser && camp.author.id.equals(currentUser._id)) { %>
+                        <a class="btn btn-secondary" href="/campgrounds/<%= camp._id %>/edit">Edit Campground</a>
+                        <form action="/campgrounds/<%= camp._id %>?_method=DELETE"  style="display: inline; margin: 20px;"  method="POST">
+                            <button class="btn btn-danger float-right" type="submit" >Delete</button>
+                        </form>
+                    <% } %>
+
                     <p class="text-right"><em>-By <%= camp.author.username %></em> </p>
                    
                 </div>
