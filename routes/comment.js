@@ -49,7 +49,7 @@ router.post("/campgrounds/:id/comments",isLoggedIn,(req,res)=>{
 //============================
 // Comments Edit Routes
 //============================
-router.get("/campgrounds/:id/comments/:com_id/edit",isLoggedIn,(req,res)=>{
+router.get("/campgrounds/:id/comments/:com_id/edit",authCommentOwner,(req,res)=>{
     var camp = {
         id : req.params.id
     }
@@ -64,7 +64,7 @@ router.get("/campgrounds/:id/comments/:com_id/edit",isLoggedIn,(req,res)=>{
     })
 })
 
-router.put("/campgrounds/:id/comments/:com_id",isLoggedIn,(req,res)=>{
+router.put("/campgrounds/:id/comments/:com_id",authCommentOwner,(req,res)=>{
     comment.findByIdAndUpdate(req.params.com_id,req.body.comment,(err,ncom)=>{
         if(err){
             console.log(err)
@@ -74,12 +74,31 @@ router.put("/campgrounds/:id/comments/:com_id",isLoggedIn,(req,res)=>{
     })
 })
 
-router.delete('/campgrounds/:id/comments/:com_id',(req,res)=>{
+router.delete('/campgrounds/:id/comments/:com_id',authCommentOwner,(req,res)=>{
     comment.findByIdAndRemove(req.params.com_id,(err)=>{
         res.redirect('back')
     })
 })
 
+function authCommentOwner(req , res , next){
+    //adding authorization
+    if(req.isAuthenticated()){
+        comment.findById(req.params.com_id,(err,fcomment)=>{
+            if(err){
+                res.redirect("back")
+            }else{
+                if(fcomment.author.id.equals(req.user._id)){
+                    next();
+                }else{
+                    res.redirect("back")
+                }
+            }
+        })
+
+    }else{
+        res.redirect("back")
+    }
+}
 
 function isLoggedIn(req ,res ,next){
     if(req.isAuthenticated()){
