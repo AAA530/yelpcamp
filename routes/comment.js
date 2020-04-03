@@ -3,13 +3,14 @@ var router = express.Router()
 var camp = require('./../models/camps')
 var comment = require('./../models/comment')
 var user = require('./../models/user')
+var middleware  = require('../middelware')
 
 
 //============================
 // Comments Routes
 //============================
 
-router.get("/campgrounds/:id/comments/new",isLoggedIn,(req,res)=>{
+router.get("/campgrounds/:id/comments/new",middleware.isLoggedIn,(req,res)=>{
     camp.findById(req.params.id).populate("comments").exec((err,fcamp)=>{
         if(err){
             console.log(err);
@@ -20,7 +21,7 @@ router.get("/campgrounds/:id/comments/new",isLoggedIn,(req,res)=>{
     })
 })
 
-router.post("/campgrounds/:id/comments",isLoggedIn,(req,res)=>{
+router.post("/campgrounds/:id/comments",middleware.isLoggedIn,(req,res)=>{
     var n_comment = req.body.comment
     var id = req.params.id
     camp.findById(req.params.id,(err,camp)=>{
@@ -49,7 +50,7 @@ router.post("/campgrounds/:id/comments",isLoggedIn,(req,res)=>{
 //============================
 // Comments Edit Routes
 //============================
-router.get("/campgrounds/:id/comments/:com_id/edit",authCommentOwner,(req,res)=>{
+router.get("/campgrounds/:id/comments/:com_id/edit",middleware.authCommentOwner,(req,res)=>{
     var camp = {
         id : req.params.id
     }
@@ -64,7 +65,7 @@ router.get("/campgrounds/:id/comments/:com_id/edit",authCommentOwner,(req,res)=>
     })
 })
 
-router.put("/campgrounds/:id/comments/:com_id",authCommentOwner,(req,res)=>{
+router.put("/campgrounds/:id/comments/:com_id",middleware.authCommentOwner,(req,res)=>{
     comment.findByIdAndUpdate(req.params.com_id,req.body.comment,(err,ncom)=>{
         if(err){
             console.log(err)
@@ -74,38 +75,11 @@ router.put("/campgrounds/:id/comments/:com_id",authCommentOwner,(req,res)=>{
     })
 })
 
-router.delete('/campgrounds/:id/comments/:com_id',authCommentOwner,(req,res)=>{
+router.delete('/campgrounds/:id/comments/:com_id',middleware.authCommentOwner,(req,res)=>{
     comment.findByIdAndRemove(req.params.com_id,(err)=>{
         res.redirect('back')
     })
 })
 
-function authCommentOwner(req , res , next){
-    //adding authorization
-    if(req.isAuthenticated()){
-        comment.findById(req.params.com_id,(err,fcomment)=>{
-            if(err){
-                res.redirect("back")
-            }else{
-                if(fcomment.author.id.equals(req.user._id)){
-                    next();
-                }else{
-                    res.redirect("back")
-                }
-            }
-        })
-
-    }else{
-        res.redirect("back")
-    }
-}
-
-function isLoggedIn(req ,res ,next){
-    if(req.isAuthenticated()){
-        return next()
-    }else{
-        res.redirect("/login")
-    }
-}
 
 module.exports = router

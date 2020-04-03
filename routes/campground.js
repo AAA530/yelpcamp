@@ -2,6 +2,7 @@ var express = require('express')
 var router = express.Router()
 var camp = require('./../models/camps')
 var comment = require('./../models/comment')
+var middleware  = require('../middelware')
 
 
 router.get('/',(req,res)=>{
@@ -19,7 +20,7 @@ router.get('/campgrounds',(req,res)=>{
 });
 
 
-router.post('/campgrounds',isLoggedIn,(req,res)=>{
+router.post('/campgrounds',middleware.isLoggedIn,(req,res)=>{
 
     //to add data to array
     var name = req.body.name;
@@ -41,7 +42,7 @@ router.post('/campgrounds',isLoggedIn,(req,res)=>{
     })
 });
 
-router.get('/campgrounds/new',isLoggedIn,(req,res)=>{
+router.get('/campgrounds/new',middleware.isLoggedIn,(req,res)=>{
     res.render('new_camp');
 })
 
@@ -57,13 +58,13 @@ router.get('/campgrounds/:id',(req,res)=>{
 })
 
 //update campgrounds
-router.get('/campgrounds/:id/edit',authCampOwner , (req,res)=>{
+router.get('/campgrounds/:id/edit',middleware.authCampOwner , (req,res)=>{
     camp.findById(req.params.id,(err,fcamp)=>{
         res.render('camp_edit',{camp : fcamp})
     })
 })
 
-router.put('/campgrounds/:id/edit',authCampOwner,(req,res)=>{
+router.put('/campgrounds/:id/edit',middleware.authCampOwner,(req,res)=>{
     camp.findByIdAndUpdate(req.params.id , req.body.cam , (err,ncamp)=>{
         if(err){
             res.redirect("/campgrounds")
@@ -73,38 +74,12 @@ router.put('/campgrounds/:id/edit',authCampOwner,(req,res)=>{
     })
 })
 
-router.delete('/campgrounds/:id',authCampOwner,(req,res)=>{
+router.delete('/campgrounds/:id',middleware.authCampOwner,(req,res)=>{
     camp.findByIdAndRemove(req.params.id,(err)=>{
         res.redirect("/campgrounds")
     })
 })
 
-function isLoggedIn(req ,res ,next){
-    if(req.isAuthenticated()){
-        return next()
-    }else{
-        res.redirect("/login")
-    }
-}
 
-function authCampOwner(req , res , next){
-    //adding authorization
-    if(req.isAuthenticated()){
-        camp.findById(req.params.id,(err,fcamp)=>{
-            if(err){
-                res.redirect("back")
-            }else{
-                if(fcamp.author.id.equals(req.user._id)){
-                    next();
-                }else{
-                    res.redirect("back")
-                }
-            }
-        })
-
-    }else{
-        res.redirect("back")
-    }
-}
 
 module.exports = router
